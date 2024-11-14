@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limcova - Limpiadora de Máquinas Cortadora</title>
+    <!-- Incluye el SDK de Firebase no modular -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #c8102e;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        header img {
+            width: 100px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        header h1 {
+            font-size: 32px;
+            color: white;
+            text-align: center;
+        }
+
+        /* Botón "Comentarios" pequeño en la esquina superior derecha */
+        .comentarios-btn {
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 1px; /* Reducción del ancho */
+            font-size: 15px; /* Fuente pequeña */
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            width: 150px; /* Ancho ajustado */
+        }
+
+        .comentarios-btn:hover {
+            background-color: #005bb5;
+            box-shadow: 0 6px #004999; /* Sombra más pronunciada en hover */
+        }
+
+        .comentarios-btn:active {
+            transform: translateY(3px); /* Movimiento hacia abajo en clic */
+            box-shadow: 0 2px #004999;  /* Menos sombra para simular que el botón se presiona */
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #c8102e;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background-color: #a21a2d;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* Estilos para el pie de página */
+        footer {
+            background-color: #3f282c;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="logotipo.png" alt="Logotipo de Limcova">
+        <h1>Limcova - Limpiadora de Máquinas Cortadora</h1>
+        <!-- Botón de comentarios en la esquina superior derecha -->
+        <button class="comentarios-btn" onclick="window.location.href='opinion.html'">Comentarios</button>
+    </header>
+
+    <div class="container">
+        <h2>Iniciar Sesión</h2>
+        <input type="email" id="email" placeholder="Correo Electrónico" autocomplete="email" required>
+        <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" required>
+        <div id="error" class="error"></div>
+        <button id="loginButton">Iniciar Sesión</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Limcova. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXxM0o30q4ZoYNutXPb8OEIVGbSI69lpY",
+            authDomain: "limcova02.firebaseapp.com",
+            projectId: "limcova02",
+            storageBucket: "limcova02.appspot.com",
+            messagingSenderId: "521693965905",
+            appId: "1:521693965905:web:d78db812d87fa0cb511270",
+            measurementId: "G-FQG16ZQK37"
+        };
+
+        // Inicializa Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Manejar inicio de sesión
+        document.getElementById('loginButton').addEventListener('click', login);
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    window.location.href = 'inicio.html'; // Redirecciona después del inicio de sesión
+                })
+                .catch(error => {
+                    errorDiv.textContent = 'Usuario o contraseña inválidos';
+                });
+        }
+    </script>
+</body>
+</html>

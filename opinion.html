@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foro - Opiniones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #e9f2f9;
+            position: relative;
+        }
+
+        /* Marca de agua más grande (logotipo) */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('logotipo.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 80%; /* Tamaño más grande */
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        header {
+            background-color: #0066cc;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        header img {
+            max-width: 40px;
+            height: auto;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        header h1 {
+            font-size: 26px;
+            margin: 0;
+            font-weight: 600;
+            display: inline;
+        }
+
+        /* Botón "Gráficos y Datos" */
+        .btn-datos {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background-color: #004999;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-datos:hover {
+            background-color: #003366;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            background-color: #0066cc;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: auto;
+            z-index: 1;
+            position: relative;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        form h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #0066cc;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        button:hover {
+            background-color: #004999;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .opiniones {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .opinion {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .opinion:last-child {
+            border-bottom: none;
+        }
+
+        .opinion h3 {
+            font-size: 18px;
+            color: #0066cc;
+            margin: 0 0 5px;
+        }
+
+        .opinion p {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .back-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-button a {
+            background-color: #0066cc;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .back-button a:hover {
+            background-color: #004999;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .opinion-time {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="logotipo.png" alt="Logotipo">
+    <h1>Foro - Deja tu Opinión</h1>
+    <button class="btn-datos" onclick="window.location.href='inicio.html'">Gráficos y Datos</button>
+</header>
+
+<main>
+    <form id="opinionForm">
+        <h2>Enviar una Opinión</h2>
+        <label for="nombre">Tu Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        
+        <label for="opinion">Tu Opinión:</label>
+        <textarea id="opinion" name="opinion" required></textarea>
+        
+        <button type="submit">Enviar</button>
+    </form>
+
+    <section class="opiniones" id="opinionesSection">
+        <h2>Opiniones Anteriores</h2>
+        <!-- Aquí se mostrarán las opiniones cargadas desde Firestore -->
+    </section>
+
+    <div class="back-button">
+        <a href="index.html">Volver a Inicio</a>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Foro. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+    // Configuración de Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyAXxM0o30q4ZoYNutXPb8OEIVGbSI69lpY",
+        authDomain: "limcova02.firebaseapp.com",
+        projectId: "limcova02",
+        storageBucket: "limcova02.appspot.com",
+        messagingSenderId: "521693965905",
+        appId: "1:521693965905:web:d78db812d87fa0cb511270",
+        measurementId: "G-FQG16ZQK37"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const opinionForm = document.getElementById('opinionForm');
+    const opinionesSection = document.getElementById('opinionesSection');
+
+    // Función para guardar opiniones en Firestore
+    opinionForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const opinionText = document.getElementById('opinion').value;
+        const nombre = document.getElementById('nombre').value;
+
+        if (opinionText && nombre) {
+            try {
+                // Guardar la opinión en Firestore
+                await db.collection('opiniones').add({
+                    nombre: nombre,
+                    texto: opinionText,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Mostrar la opinión en la página sin recargar
+                addOpinionToDOM(nombre, opinionText, new Date());
+
+                // Limpiar los campos
+                document.getElementById('opinion').value = '';
+                document.getElementById('nombre').value = '';
+            } catch (error) {
+                console.error('Error al guardar la opinión:', error);
+            }
+        }
+    });
+
+    // Función para cargar y mostrar opiniones guardadas en Firestore
+    async function loadOpiniones() {
+        try {
+            const querySnapshot = await db.collection('opiniones').orderBy('timestamp', 'desc').get();
+            querySnapshot.forEach((doc) => {
+                const opinionData = doc.data();
+                const fecha = opinionData.timestamp ? opinionData.timestamp.toDate() : new Date();
+                addOpinionToDOM(opinionData.nombre, opinionData.texto, fecha);
+            });
+        } catch (error) {
+            console.error('Error al cargar las opiniones:', error);
+        }
+    }
+
+    // Función para agregar opiniones al DOM
+    function addOpinionToDOM(nombre, texto, fecha) {
+        const opinionDiv = document.createElement('div');
+        opinionDiv.classList.add('opinion');
+        opinionDiv.innerHTML = `<h3>${nombre}</h3><p>${texto}</p><p class="opinion-time">Publicado el: ${fecha.toLocaleString()}</p>`;
+        opinionesSection.appendChild(opinionDiv);
+    }
+
+    // Cargar las opiniones al cargar la página
+    window.onload = function() {
+        loadOpiniones();
+    };
+</script>
+
+</body>
+</html>
